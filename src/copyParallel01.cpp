@@ -57,8 +57,7 @@ void aggData(MesoData & inputData, outputData & outData);
 
 vector<string> readFileList(string filepath);
 
-
-int main(){
+int main() {
 	struct timeval start, end;
 	double delta;
 
@@ -69,18 +68,18 @@ int main(){
 	vector<string> vectorOfFilePaths = readFileList(fileListpath);
 
 	MesoData inputData = {MAX_NUM_DATA_POINTS,
-				0,
-				(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float)),
-				(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float))
-		};
+		0,
+		(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float)),
+		(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float))
+	};
 
 	outputData outData;
 
 	for(int i=0; i<NUM_OF_SECTORS; i++){
-			for(int j=0; j<NUM_OF_SPEED; j++){
-				outData[i][j] = 0;
-			}
+		for(int j=0; j<NUM_OF_SPEED; j++){
+			outData[i][j] = 0;
 		}
+	}
 
 	readData(inputData, vectorOfFilePaths);
 
@@ -103,70 +102,66 @@ int main(){
 
 	free(inputData.windDir);
 	free(inputData.windSpd);
-
 }
 
-void callFunction(){
-
+void callFunction() {
 	struct timeval start, end;
-		double delta;
+	double delta;
 
-		gettimeofday(&start, NULL);
-		cout<<"Hello World... I am processing.." << endl << endl;
+	gettimeofday(&start, NULL);
+	cout<<"Hello World... I am processing.." << endl << endl;
 
-		string fileListpath = "../Data/files.txt";
-		vector<string> vectorOfFilePaths = readFileList(fileListpath);
+	string fileListpath = "../Data/files.txt";
+	vector<string> vectorOfFilePaths = readFileList(fileListpath);
 
-		MesoData inputData = {MAX_NUM_DATA_POINTS,
-					0,
-					(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float)),
-					(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float))
-			};
+	MesoData inputData = {MAX_NUM_DATA_POINTS,
+				0,
+				(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float)),
+				(float*)calloc(MAX_NUM_DATA_POINTS, sizeof(float))
+		};
 
-		outputData outData;
+	outputData outData;
 
-		for(int i=0; i<NUM_OF_SECTORS; i++){
-				for(int j=0; j<NUM_OF_SPEED; j++){
-					outData[i][j] = 0;
-				}
-			}
-
-		readData(inputData, vectorOfFilePaths);
-
-		aggData(inputData, outData);
-
-		cout<<"******************** Printing final 2D array *******************************"<< endl;
-		for(int i=0; i<NUM_OF_SECTORS; i++){
-			for(int j=0; j<NUM_OF_SPEED; j++){
-				cout<< outData[i][j] << "\t";
-			}
-			cout << endl;
+	for(int i=0; i<NUM_OF_SECTORS; i++){
+		for(int j=0; j<NUM_OF_SPEED; j++){
+			outData[i][j] = 0;
 		}
+	}
 
-		gettimeofday(&end, NULL);
-		delta = (end.tv_sec  - start.tv_sec) +
-			         ((end.tv_usec - start.tv_usec) / 1.e6);
+	readData(inputData, vectorOfFilePaths);
 
-		//cout<< endl;
-		printf("%.6lf seconds elapsed\n", delta);
+	aggData(inputData, outData);
 
-		free(inputData.windDir);
-		free(inputData.windSpd);
+	cout<<"******************** Printing final 2D array *******************************"<< endl;
+	for(int i=0; i<NUM_OF_SECTORS; i++){
+		for(int j=0; j<NUM_OF_SPEED; j++){
+			cout<< outData[i][j] << "\t";
+		}
+		cout << endl;
+	}
 
+	gettimeofday(&end, NULL);
+	delta = (end.tv_sec  - start.tv_sec) +
+		         ((end.tv_usec - start.tv_usec) / 1.e6);
 
+	//cout<< endl;
+	printf("%.6lf seconds elapsed\n", delta);
+
+	free(inputData.windDir);
+	free(inputData.windSpd);
 }
 
 int calcSpeedsBin(float winSpd) {
 	if (winSpd == 0)
-				return 0;
-			else if (winSpd > 0 and winSpd <= 5)
-				return 1;
-			else if (winSpd > 5 and winSpd <= 15)
-				return 2;
-			else if (winSpd > 15 and winSpd <= 25)
-				return 3;
-			else
-				return 4;
+		return 0;
+	else if (winSpd > 0 and winSpd <= 5)
+		return 1;
+	else if (winSpd > 5 and winSpd <= 15)
+		return 2;
+	else if (winSpd > 15 and winSpd <= 25)
+		return 3;
+	else
+		return 4;
 }
 
 int calcDirectBin(float winDir) {
@@ -177,36 +172,35 @@ int calcDirectBin(float winDir) {
 
 
 void readData(MesoData & inputData, vector<string> List) {
-
 	string line, stationId="AR628";
 	string path = "../Data/";
 	int count = 0;
 	cout<<"File list size: "<<List.size()<<endl;
 	for (int i = 0; i < List.size(); i++) {
-			cout<<"FileName:"<<List[i]<<endl;
-			ifstream inputFile(path + List[i]);
-			string rowData[6] ;
-			string token;
-			int j = 0;
-			while (getline(inputFile, line)) {
-				istringstream lineStream(line);
-				j = 0;
-				while (getline(lineStream, token, ',')) {
-					rowData[j++] = token;
-				}
-
-				if(rowData[0] == stationId){
-					//cout<<"StationID "<<rowData[0]<<endl;
-					inputData.windDir[count] = strtof(rowData[5].c_str(), NULL);
-					inputData.windSpd[count] = strtof(rowData[4].c_str(), NULL);
-					count++;
-				}
-
-				//count++;
-				lineStream.clear();
+		cout<<"FileName:"<<List[i]<<endl;
+		ifstream inputFile((path + List[i]).c_str());
+		string rowData[6] ;
+		string token;
+		int j = 0;
+		while (getline(inputFile, line)) {
+			istringstream lineStream(line);
+			j = 0;
+			while (getline(lineStream, token, ',')) {
+				rowData[j++] = token;
 			}
-			inputFile.close();
+
+			if(rowData[0] == stationId){
+				//cout<<"StationID "<<rowData[0]<<endl;
+				inputData.windDir[count] = strtof(rowData[5].c_str(), NULL);
+				inputData.windSpd[count] = strtof(rowData[4].c_str(), NULL);
+				count++;
+			}
+
+			//count++;
+			lineStream.clear();
 		}
+		inputFile.close();
+	}
 
 	inputData.numDataPoints = count;
 	//cout<<"Number of data points= "<<inputData.numDataPoints<<endl;
@@ -273,11 +267,9 @@ void aggData(MesoData & inputData, outputData & outData){
 	}
 }
 
-
-
 vector<string> readFileList(string filepath) {
 	vector<string> list;
-	ifstream inputfile(filepath);
+	ifstream inputfile(filepath.c_str());
 	string line;
 	while (getline(inputfile, line)) {
 		list.push_back(line);
@@ -287,8 +279,3 @@ vector<string> readFileList(string filepath) {
 }
 
 ///Library/Frameworks/Python.framework/Versions/2.7/Headers/
-
-
-
-
-
